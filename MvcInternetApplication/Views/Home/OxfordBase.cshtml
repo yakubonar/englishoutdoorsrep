@@ -1,0 +1,182 @@
+﻿@{
+    @Styles.Render("~/Content/littlestyle.css");
+    <script src="/Scripts/jquery-1.8.2.min.js"></script>
+}
+
+    <!--блок для відповідей-->
+    <div class="container-ansver">
+        <p class="exercStyle">Exercise - </p>
+        <p id="exercId" class="exercStyle">@ViewBag.Exercise</p>
+        <br />
+        <button ="javascript: return false;" class="backexerc right" >Back</button>
+        <button ="javascript: return false;" class="nextexerc right" >Next</button>
+
+        @{int a = ViewBag.NAnsver;}
+        @for (int i = 1; i <= a; i++)
+        {
+            <div id="@ViewBag.Scrips[i]" class="divstacionaransv">
+                <button id="@ViewBag.Buttons[i]" class="buttn">@i).</button>
+                <p id="@ViewBag.Labels[i]" class="ansverstyle"></p>
+                <script>
+                    $(function () {
+                        $("#@ViewBag.Buttons[i]").click(function () {
+                            makeRequest(@i);
+                        });
+                        function makeRequest(id) {
+                            $.ajax({
+                                url: "@Url.Action("GetAnsver")",
+                            type: "GET",
+                            data: "id=" + "@ViewBag.Book" + ":" + "@ViewBag.Lesson" + ":" + "@ViewBag.Exercise" + ":" + id,
+                                success: function (response) {
+                                    var n = response.indexOf("<!--SCRIPT");
+                                    var res = response.substring(0, n);
+                                    if (n === -1) {
+                                        res = response;
+                                    }
+                                    $("#@ViewBag.Labels[i]").text("@i" + "). " + res);
+                                    $("#@ViewBag.Buttons[i]").remove();
+                                },
+                        });
+                        }
+                    });
+                </script>
+            </div>
+        }
+        <!--кількість вправ-->
+        <p id="exercqantity" class="hide">@ViewBag.NExercise</p>
+        <!--кількість кнопок-->
+        <p id="ansverqant" class="hide">@ViewBag.NAnsver</p>
+        <!--назва вправ-->
+        <p id="exercnames" class="hide">@ViewBag.QuntExerCalled</p>
+        <!--порядковий номер-->
+        <p id="siquensexerc" class="hide">1</p>
+        <!--кількість відповідей-->
+        <p id="quantansv" class="hide">@ViewBag.QuantAnsver</p>
+    </div> 
+
+<div class="container-image">
+
+    <div>
+    <div class="searchSt">
+        <form action="/Home/@ViewBag.Book" method="post">
+            <input class="inputText" type="text" name="message" value="@ViewBag.Lesson" />
+            <input class="search" type="submit" value="Search" />
+        </form>
+    </div>
+    <div class="backforlessdiv">
+        <form class="nextBack" action="/Home/@ViewBag.Book" method="post">
+            <input class="back" type="submit" value="Back" />
+            <input class="hide" type="text" name="message" value="@ViewBag.BackLesson" />
+        </form>
+    </div>
+    <div class="searchSt">
+        <p class="lessonNumb">Lesson - </p>
+        <p id="lessonsId" class="lessonNumb">@ViewBag.Lesson</p>
+    </div>
+    <div class="searchSt">
+    <form class="nextBack" action="/Home/@ViewBag.Book" method="post">
+        <input class="hide" type="text" name="message" value="@ViewBag.NextLesson" />
+        <input class="next" type="submit" value="Next" />
+    </form>
+    </div>
+</div>
+    <br />
+    <!--блок для зображень-->
+    <div>
+        @{string snl = ViewBag.Lesson;}
+        @{string directory = ViewBag.Directory;}
+        @{int nl = Convert.ToInt32(ViewBag.NImage);}
+        @for (int i = 1; i <= nl; i++)
+        {
+            string p = i.ToString();
+            <img src="@Url.Content("~/Content/" + directory + "/" + snl + "/" + p + ".jpg")">
+            if (i < nl)
+            { 
+                <br />
+            }
+        }
+    </div>
+    <div class="below_image">
+    <div class="searchSt">
+        <form class="nextBack" action="/Home/@ViewBag.Book" method="post">
+            <input class="back" type="submit" value="Back" />
+            <input class="hide" type="text" name="message" value="@ViewBag.BackLesson" />
+        </form>
+    </div>
+    <div class="searchSt">
+        <p class="lessonNumb">Lesson - @ViewBag.Lesson</p>
+    </div>
+    <div class="searchSt">
+        <form class="nextBack" action="/Home/@ViewBag.Book" method="post">
+            <input class="hide" type="text" name="message" value="@ViewBag.NextLesson" />
+            <input class="next" type="submit" value="Next" />
+        </form>
+    </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("body").on("click", ".buttonscript", function () {
+            var idd = this.id;
+            var les = $("#lessonsId").text();
+            var exr = $('#exercId').text();
+            $.ajax({
+                url: "@Url.Action("GetAnsver")",
+                type: "GET",
+                data: "id=" + "@ViewBag.Book" + ":" + les + ":" + exr + ":" + idd,
+                success: function (response) {
+                    var n = response.indexOf("<!--SCRIPT");
+                    var res = response.substring(0, n);
+                    $('#divid' + idd).append(idd + "). " + response);
+                    $('#' + idd).remove();
+                },
+            });
+        });
+        $("body").on("click", ".nextexerc", function () {
+            $(".buttn").remove();
+            $(".buttonscript").remove();
+            $(".divstacionaransv").remove();
+            $(".ansverstylescript").remove();
+            $(".ansverstyle").remove();
+            var textmas = $("#exercnames").text();/*назви вправ, для масиву*/
+            var nansver = $("#quantansv").text();/*кількість відповідей для кожної вправи*/
+            var masnames = textmas.split("_");/*масив із назвами вправ*/
+            var masnans = nansver.split("_");/*масив із кількостями відповідей для кожної вправи*/
+            var exerc = $("#siquensexerc").text();/*поточна вправа*/
+            exerc++;
+            if (exerc > masnames.length)
+                exerc = 1;
+            $("#siquensexerc").text(exerc);/*поточний порядковий номер вправи*/
+            $("#exercId").text(masnames[exerc - 1]);/*назва поточної вправи*/
+            $("#ansverqant").text(masnans[exerc - 1]);/*поточна кількість кнопок*/
+            for (var i = 1; i <= masnans[exerc - 1]; i++) {
+                var player = '<div id="divid' + i + '" class="ansverstylescript"><button ="javascript: return false;" id="' + i + '" class="buttonscript right">' + i + ').</button></div>';
+                $('.container-ansver').append(player);
+            }
+        });
+        $("body").on("click", ".backexerc", function () {
+            $(".buttn").remove();
+            $(".buttonscript").remove();
+            $(".divstacionaransv").remove();
+            $(".ansverstylescript").remove();
+            $(".ansverstyle").remove();
+            var textmas = $("#exercnames").text();/*назви вправ, для масиву*/
+            var nansver = $("#quantansv").text();/*кількість відповідей для кожної вправи*/
+            var masnames = textmas.split("_");/*масив із назвами вправ*/
+            var masnans = nansver.split("_");/*масив із кількостями відповідей для кожної вправи*/
+            var exerc = $("#siquensexerc").text();/*поточна вправа*/
+            exerc--;
+            if (exerc < 1)
+                exerc = masnames.length;
+            $("#siquensexerc").text(exerc);/*поточний порядковий номер вправи*/
+            $("#exercId").text(masnames[exerc - 1]);/*назва поточної вправи*/
+            $("#ansverqant").text(masnans[exerc - 1]);/*поточна кількість кнопок*/
+            for (var i = 1; i <= masnans[exerc - 1]; i++) {
+                var player = '<div id="divid' + i + '" class="ansverstylescript"><button ="javascript: return false;" id="' + i + '" class="buttonscript right">' + i + ').</button></div>';
+                $('.container-ansver').append(player);
+            }
+        });
+    });
+</script>

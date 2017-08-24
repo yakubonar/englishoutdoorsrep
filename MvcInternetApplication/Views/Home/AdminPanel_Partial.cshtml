@@ -1,0 +1,16 @@
+﻿@model MvcInternetApplication.Models.UsersModelTable
+@Styles.Render("~/Content/littlestyle.css")
+<div>
+    <div class="adm-panel-inline-block">
+        <form action="/Home/Delete" method="post">
+            <input type="text" name="mesage" value="@Model.AllNameUser"/>
+            <input type="submit" value="Delete" />
+        </form>
+    </div>
+    <div class="adm-panel-inline-block">
+        <form action="/Account/ManageForChange" method="post">
+            <input class="hide" type="text" name="mesage" value="@Model.AllNameUser"/>
+            <input type="submit" value="Change password..." />
+        </form>
+    </div>
+</div>

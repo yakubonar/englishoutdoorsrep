@@ -1,0 +1,54 @@
+﻿@model IEnumerable<MvcInternetApplication.Models.RoleUserModel>
+@{
+    ViewBag.Title = "RolePanel";
+}
+@Styles.Render("~/Content/littlestyle.css")
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+
+@foreach (var item in Model)
+{ 
+    <div>
+        <div class="adm-panel-inline-block">Available roles:</div>
+        <div class="adm-panel-inline-block">
+            <form action="/Home/LaunchRoleJustUser" method="post">
+                <input class="hide" type="text" name="mesage" value="@item.NameUser"/>
+                <input type="submit" value="JustUser" />
+            </form>
+        </div>
+        <div class="adm-panel-inline-block">
+            <form action="/Home/LaunchRoleAdmin" method="post">
+                <input class="hide" type="text" name="mesage" value="@item.NameUser" />
+                <input type="submit" value="Admin" />
+            </form>
+        </div>
+        <div class="adm-panel-inline-block">Existing users:</div>
+        <div class="adm-panel-inline-block"><strong> @item.NameUser</strong></div>
+        <div class="adm-panel-inline-block">, Role for now: </div>
+        @if (item.NameRole == "---")
+        {
+            <p class="adm-panel-inline-block">-   <strong>Was stopped!</strong></p>
+        }
+        else
+        {
+            <div class="adm-panel-inline-block">
+                <form action="/Home/StopRole" method="post">
+                    <input class="hide" type="text" name="mesage" value="@item.NameUser"/>
+                    <input type="submit" value="@item.NameRole" />
+                </form>
+            </div>
+        }
+    </div>
+}
+<div>
+    <label>Table with roles: 'RoleId, RoleName'--> | @ViewBag.AccesRoles</label>
+</div>
+<div>
+    <label>Table of users with theirs roles: 'RoleId, UserId' --> | @ViewBag.UsersWithRoles</label>
+</div>
+<div>
+    <label>The all users: 'UserId, UserName' --> | @ViewBag.UsersProfill</label>
+</div>

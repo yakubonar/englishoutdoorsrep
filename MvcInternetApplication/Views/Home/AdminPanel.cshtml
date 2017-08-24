@@ -1,0 +1,25 @@
+﻿@model IEnumerable<MvcInternetApplication.Models.UsersModelTable>
+
+@{
+    ViewBag.Title = "Admin Panel";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
+</hgroup>
+
+
+@foreach (var item in Model)
+{ 
+    @Html.Partial("AdminPanel_Partial", item)
+}
+
+
+<p>
+    <strong>@Html.ActionLink("Register", "Register", "Account")</strong> if you need to create a new account.
+</p>
+
+<p>
+    <strong>@Html.ActionLink("Roles", "RolePanel", "Home")</strong> if you need to change roles.
+</p>
